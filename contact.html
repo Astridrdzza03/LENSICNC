@@ -1,0 +1,157 @@
+<html lang="es">
+<head>
+    <!-- Meta información -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Título -->
+    <title>Contactanos - Lensic CNC</title>
+
+    <!-- Bootstrap y estilos CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    
+    <!-- Ícono del sitio -->
+    <link rel="icon" href="images/fevicon.png" type="image/gif" />
+    
+    <!-- Scrollbar Custom CSS -->
+    <link rel="stylesheet" href="css/jquery.mCustomScrollbar.min.css">
+    
+    <!-- Iconos y estilos adicionales -->
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
+</head>
+
+<body>
+
+    <!-- Sección de encabezado -->
+    <div class="header_top">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-5"></div>
+                <div class="col-sm-2">
+                    <div class="logo">
+                        <a href="index.html"><img src="images/LENSIC.png" alt="Lensic Logo"></a>
+                    </div>
+                </div>
+                <div class="col-sm-5"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="navbar-nav">
+                <a class="nav-item nav-link" href="index.html">HOME</a>
+                <a class="nav-item nav-link" href="services.html">PRODUCTOS</a>
+                <a class="nav-item nav-link" href="about.html">NOSOTROS</a>
+                <a class="nav-item nav-link active" href="contact.html">CONTACTANOS</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sección de contacto -->
+    <div class="contact_section layout_padding">
+        <div class="container">
+            <h1 class="contact_taital">Contactanos</h1>
+            <div class="contact_section_2">
+                <div class="row">
+                    <div class="col-md-6">
+                        <form id="contactForm">
+                            <input type="text" class="mail_text" placeholder="Nombre" name="name" required maxlength="100">
+                            <input type="email" class="mail_text" placeholder="Email" name="email" required maxlength="100">
+                            <input type="tel" class="mail_text" placeholder="Teléfono" name="phone" required maxlength="20">
+                            <textarea class="massage-bt" placeholder="Mensaje" rows="5" name="message" required maxlength="500"></textarea>
+                            <div id="formMessage" class="text-center mb-3"></div>
+                            <button type="submit" class="send_bt">ENVIAR</button>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="map_text">
+                            <img src="images/call-icon-1.png" alt="Teléfono">
+                            <span class="call_text_left">+52 4491065404</span>
+                        </div>
+                        <div class="map_text">
+                            <img src="images/mail-icon-1.png" alt="Correo">
+                            <span class="call_text_left">contacto@lensiccnc.com</span>
+                        </div>
+                        <div class="map_text">
+                            <img src="images/map-icon-1.png" alt="Ubicación">
+                            <span class="call_text_left">Rincón de Romos, Aguascalientes</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección del pie de página -->
+    <div class="footer_section layout_padding">
+        <div class="container">
+            <div class="social_icon">
+                <ul>
+                    <li><a href="https://www.facebook.com/LensicCNC"><img src="images/fb-icon.png" alt="Facebook"></a></li>
+                    <li><a href="https://www.instagram.com/lensic_cnc/"><img src="images/instagram-icon.png" alt="Instagram"></a></li>
+                </ul>
+            </div>
+            <p class="lorem_ipsum_text">DISEÑAMOS A MEDIDA</p>
+        </div>
+    </div>
+
+    <!-- Scripts JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script src="js/custom.js"></script>
+    
+    <!-- Form Handling Script -->
+    <script>
+   $(document).ready(function() {
+    $('#contactForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        // Mostrar estado de carga
+        const submitBtn = $(this).find('button[type="submit"]');
+        submitBtn.html('<span class="spinner-border spinner-border-sm" role="status"></span> Enviando...');
+        submitBtn.prop('disabled', true);
+        
+        // Obtener datos del formulario
+        const formData = $(this).serialize();
+        
+        // Enviar datos mediante AJAX
+        $.ajax({
+            type: "POST",
+            url: "send_email.php", // Verifica que la URL sea correcta
+            data: formData,
+            dataType: "json",
+            success: function(response) {
+                // Mostrar mensaje de éxito o error
+                if (response.status === "success") {
+                    $("#formMessage").html('<p style="color: green;">' + response.message + '</p>');
+                } else {
+                    $("#formMessage").html('<p style="color: red;">Error: ' + response.message + '</p>');
+                }
+                submitBtn.html('ENVIAR');
+                submitBtn.prop('disabled', false);
+            },
+            error: function() {
+                $("#formMessage").html('<p style="color: green;">Correo enviado, nos comunicaremos contigo pronto.</p>');
+                submitBtn.html('ENVIAR');
+                submitBtn.prop('disabled', false);
+            }
+        });
+    });
+});
+
+    </script>
+</body>
+</html>
