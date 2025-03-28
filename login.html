@@ -113,125 +113,125 @@
     
     <script>
     $(document).ready(function() {
-    // Manejar el envío del formulario
-    $('#loginForm').submit(function(e) {
-        e.preventDefault();
-        
-        // Resetear mensajes
-        $('.error-message').text('');
-        const $message = $('#loginMessage');
-        $message.addClass('d-none').removeClass('alert-danger alert-success');
-        
-        // Validar campos
-        const email = $('#email').val().trim();
-        const password = $('#password').val();
-        let isValid = true;
-        
-        if (!email) {
-            $('#emailError').text('Por favor ingresa tu correo electrónico');
-            isValid = false;
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            $('#emailError').text('Ingresa un correo electrónico válido');
-            isValid = false;
-        }
-        
-        if (!password) {
-            $('#passwordError').text('Por favor ingresa tu contraseña');
-            isValid = false;
-        }
-        
-        if (!isValid) return;
-        
-        // Mostrar estado de carga
-        const $submitBtn = $('button[type="submit"]');
-        const $submitText = $('#loginText');
-        const $spinner = $('#loginSpinner');
-        
-        $submitText.text('Iniciando sesión...');
-        $spinner.removeClass('d-none');
-        $submitBtn.prop('disabled', true);
-        
-        // Enviar solicitud al servidor
-        $.ajax({
-            url: 'login.php',
-            type: 'POST',
-            dataType: 'json',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                email: email,
-                password: password
-            }),
-            success: function(response) {
-                if (response.success) {
-                    showSuccess('Inicio de sesión exitoso. Redirigiendo...');
-                    
-                    // Redirigir después de 1.5 segundos
-                    setTimeout(function() {
-                        window.location.href = 'index.html';
-                    }, 1500);
-                } else {
-                    handleError(response);
-                }
-            },
-            error: function(xhr) {
-                let errorMsg = 'Error en el servidor';
-                
-                // Intentar parsear la respuesta como JSON
-                try {
-                    const response = xhr.responseText ? JSON.parse(xhr.responseText) : null;
-                    if (response && response.message) {
-                        errorMsg = response.message;
+        // Manejar el envío del formulario
+        $('#loginForm').submit(function(e) {
+            e.preventDefault();
+            
+            // Resetear mensajes
+            $('.error-message').text('');
+            const $message = $('#loginMessage');
+            $message.addClass('d-none').removeClass('alert-danger alert-success');
+            
+            // Validar campos
+            const email = $('#email').val().trim();
+            const password = $('#password').val();
+            let isValid = true;
+            
+            if (!email) {
+                $('#emailError').text('Por favor ingresa tu correo electrónico');
+                isValid = false;
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                $('#emailError').text('Ingresa un correo electrónico válido');
+                isValid = false;
+            }
+            
+            if (!password) {
+                $('#passwordError').text('Por favor ingresa tu contraseña');
+                isValid = false;
+            }
+            
+            if (!isValid) return;
+            
+            // Mostrar estado de carga
+            const $submitBtn = $('button[type="submit"]');
+            const $submitText = $('#loginText');
+            const $spinner = $('#loginSpinner');
+            
+            $submitText.text('Iniciando sesión...');
+            $spinner.removeClass('d-none');
+            $submitBtn.prop('disabled', true);
+            
+            // Enviar solicitud al servidor
+            $.ajax({
+                url: 'login.php',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    email: email,
+                    password: password
+                }),
+                success: function(response) {
+                    if (response.success) {
+                        showSuccess('Inicio de sesión exitoso. Redirigiendo...');
+                        
+                        // Redirigir después de 1.5 segundos
+                        setTimeout(function() {
+                            window.location.href = 'index.html';
+                        }, 1500);
+                    } else {
+                        handleError(response);
                     }
-                } catch (e) {
-                    // Si no es JSON, mostrar el error crudo (solo en desarrollo)
-                    errorMsg = xhr.responseText || errorMsg;
-                    console.error('Error parsing response:', e);
+                },
+                error: function(xhr) {
+                    let errorMsg = 'Error en el servidor';
+                    
+                    // Intentar parsear la respuesta como JSON
+                    try {
+                        const response = xhr.responseText ? JSON.parse(xhr.responseText) : null;
+                        if (response && response.message) {
+                            errorMsg = response.message;
+                        }
+                    } catch (e) {
+                        // Si no es JSON, mostrar el error crudo (solo en desarrollo)
+                        errorMsg = xhr.responseText || errorMsg;
+                        console.error('Error parsing response:', e);
+                    }
+                    
+                    showError(errorMsg);
+                    
+                    // Mostrar detalles del error en consola
+                    console.error('Detalles del error:', {
+                        status: xhr.status,
+                        statusText: xhr.statusText,
+                        responseText: xhr.responseText
+                    });
+                },
+                complete: function() {
+                    // Restaurar botón
+                    $submitText.text('INICIAR SESIÓN');
+                    $spinner.addClass('d-none');
+                    $submitBtn.prop('disabled', false);
                 }
-                
-                showError(errorMsg);
-                
-                // Mostrar detalles del error en consola
-                console.error('Detalles del error:', {
-                    status: xhr.status,
-                    statusText: xhr.statusText,
-                    responseText: xhr.responseText
-                });
-            },
-            complete: function() {
-                // Restaurar botón
-                $submitText.text('INICIAR SESIÓN');
-                $spinner.addClass('d-none');
-                $submitBtn.prop('disabled', false);
-            }
+            });
         });
-    });
-    
-    function showSuccess(message) {
-        const $message = $('#loginMessage');
-        $message.removeClass('d-none alert-danger')
-               .addClass('alert-success')
-               .text(message);
-    }
-    
-    function showError(message) {
-        const $message = $('#loginMessage');
-        $message.removeClass('d-none alert-success')
-               .addClass('alert-danger')
-               .text(message);
-    }
-    
-    function handleError(response) {
-        // Mostrar errores específicos de campos
-        if (response.errors) {
-            for (const field in response.errors) {
-                $(`#${field}Error`).text(response.errors[field]);
-            }
+        
+        function showSuccess(message) {
+            const $message = $('#loginMessage');
+            $message.removeClass('d-none alert-danger')
+                   .addClass('alert-success')
+                   .text(message);
         }
         
-        // Mostrar mensaje general
-        showError(response.message || 'Error al iniciar sesión');
-    }
-});
+        function showError(message) {
+            const $message = $('#loginMessage');
+            $message.removeClass('d-none alert-success')
+                   .addClass('alert-danger')
+                   .text(message);
+        }
+        
+        function handleError(response) {
+            // Mostrar errores específicos de campos
+            if (response.errors) {
+                for (const field in response.errors) {
+                    $(`#${field}Error`).text(response.errors[field]);
+                }
+            }
+            
+            // Mostrar mensaje general
+            showError(response.message || 'Error al iniciar sesión');
+        }
+    });
     </script>
 </body>
 </html>
